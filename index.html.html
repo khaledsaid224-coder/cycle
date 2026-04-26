@@ -1,0 +1,369 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:'Tajawal',sans-serif;direction:rtl;background:#061830;min-height:600px;display:flex;flex-direction:column;align-items:center;padding:24px 16px 40px;position:relative;overflow:hidden}
+.bg-words{position:absolute;inset:0;pointer-events:none;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bg-words span{font-size:88px;font-weight:900;color:rgba(255,255,255,0.03);white-space:nowrap;letter-spacing:6px;line-height:1.15;transform:rotate(-12deg)}
+.pill{position:relative;z-index:2;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:6px 18px;color:#c8e4ff;font-size:13px;margin-bottom:10px}
+.pill-dot{width:7px;height:7px;border-radius:50%;background:#5bb8ff}
+h1{position:relative;z-index:2;font-size:28px;font-weight:900;color:#fff;text-align:center;margin-bottom:4px}
+.sub{position:relative;z-index:2;font-size:13px;color:#7aafd4;text-align:center;margin-bottom:12px}
+.wheel-area{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
+.wheel-wrap{position:relative;display:inline-block}
+.pointer-top{position:absolute;top:-26px;left:50%;transform:translateX(-50%);z-index:10}
+canvas#wc{display:block;border-radius:50%}
+.spin-btn{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:72px;height:72px;border-radius:50%;
+  background:#ffffff;
+  border:5px solid #061830;
+  cursor:pointer;font-size:14px;font-weight:900;color:#0a2a5e;
+  font-family:'Tajawal',sans-serif;z-index:10;
+  transition:background .15s,color .15s,transform .15s,box-shadow .15s;
+  outline:none;line-height:1.2;padding:0;
+  box-shadow:0 4px 18px rgba(0,0,0,0.35);
+}
+.spin-btn:active{background:#1a6fd4;color:#ffffff;transform:translate(-50%,-50%) scale(0.95)}
+.spin-btn:hover:not(:disabled):not(:active){transform:translate(-50%,-50%) scale(1.08)}
+.spin-btn:disabled{opacity:.5;cursor:not-allowed}
+
+.footer-links{position:relative;z-index:2;display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.btn-footer-site{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);color:#c8e4ff;border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:9px 20px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;text-decoration:none;cursor:pointer;transition:background .2s}
+.btn-footer-site:hover{background:rgba(255,255,255,0.16)}
+.btn-footer-wa{display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;text-decoration:none;cursor:pointer;transition:background .2s}
+.btn-footer-wa:hover{background:#1ebe5a}
+
+.res-card{position:relative;z-index:2;width:100%;max-width:400px;border-radius:18px;padding:22px 24px;text-align:center;display:none;animation:pop .4s cubic-bezier(.34,1.56,.64,1);margin-bottom:12px}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.res-card.show{display:block}
+.res-card.win{background:#0d3575;border:1px solid rgba(91,184,255,.35)}
+.res-card.retry{background:#07305e;border:1px solid rgba(91,184,255,.3)}
+.res-card.lose{background:#16072e;border:1px solid rgba(130,80,220,.3)}
+.res-icon{font-size:46px;display:block;margin-bottom:8px}
+.res-title{font-size:21px;font-weight:900;color:#fff;margin-bottom:6px}
+.res-sub{font-size:13px;color:#a8d0f5;line-height:1.65;margin-bottom:12px}
+.res-code-box{background:rgba(255,255,255,.07);border:1.5px dashed rgba(255,255,255,.3);border-radius:12px;padding:10px 16px;margin-bottom:14px}
+.res-code-lbl{font-size:11px;color:#7aafd4;margin-bottom:4px}
+.res-code{font-size:20px;font-weight:900;color:#FFD700;letter-spacing:4px}
+.conv-table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px}
+.conv-table th{background:rgba(255,255,255,.1);color:#c8e4ff;padding:6px 8px;text-align:right}
+.conv-table td{padding:6px 8px;color:#a8d0f5;border-bottom:1px solid rgba(255,255,255,.06);text-align:right}
+.conv-table tr:last-child td{border-bottom:none}
+.conv-table .val{color:#FFD700;font-weight:700;text-align:left}
+.btn-wa-res{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#25D366;color:#fff;border:none;border-radius:50px;padding:12px 20px;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;text-decoration:none;transition:background .2s,transform .15s;margin-bottom:8px}
+.btn-wa-res:hover{background:#1ebe5a;transform:scale(1.02)}
+.btn-spin-again{background:#5bb8ff;color:#061830;border:none;border-radius:50px;padding:12px 28px;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;cursor:pointer;transition:transform .15s,background .15s;width:100%;margin-bottom:8px}
+.btn-spin-again:hover{background:#7ecaff;transform:scale(1.02)}
+</style>
+
+<div class="root">
+  <div class="bg-words">
+    <span>وسم المعرفة</span>
+    <span>وسم المعرفة</span>
+    <span>وسم المعرفة</span>
+  </div>
+
+  <div class="pill"><div class="pill-dot"></div>معهد وسم المعرفة للتدريب</div>
+  <h1>🎡 عجلة الحظ</h1>
+  <p class="sub">دوّر واكسب جوائز حصرية</p>
+
+  <div class="wheel-area">
+    <div class="wheel-wrap">
+      <div class="pointer-top">
+        <svg width="34" height="44" viewBox="0 0 34 44">
+          <polygon points="17,42 2,4 17,14 32,4" fill="#FFD700" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <canvas id="wc" width="320" height="320"></canvas>
+      <button class="spin-btn" id="spinBtn">دوّر!</button>
+    </div>
+  </div>
+
+  <div class="res-card" id="resCard">
+    <span class="res-icon" id="rIcon"></span>
+    <div class="res-title" id="rTitle"></div>
+    <div class="res-sub" id="rSub"></div>
+    <div class="res-code-box" id="rCodeBox" style="display:none">
+      <div class="res-code-lbl">كود الخصم الخاص بك</div>
+      <div class="res-code" id="rCode"></div>
+    </div>
+    <div id="rTable"></div>
+    <div id="rBtns"></div>
+  </div>
+
+  <div class="footer-links">
+    <a class="btn-footer-site" href="https://wal.com.sa" target="_blank">
+      🎓 استكشف دوراتنا
+    </a>
+    <a class="btn-footer-wa" id="footerWa" href="https://wa.me/966500000000" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.126 1.524 5.864L.057 23.882l6.197-1.625A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.371l-.36-.213-3.68.965.98-3.585-.233-.369A9.79 9.79 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+      دعم فني
+    </a>
+  </div>
+</div>
+
+<script>
+const WA_NUMBER = "966500000000"; // غيّر الرقم هنا
+
+// الخانات — الترتيب مهم للرسم فقط
+const S=[
+  {lbl:["خصم 10%","على دورة"],   bg:"#0d3a8a", rim:"#2060d0", txt:"#ffffff", type:"win", disc:10, discLabel:"خصم 10% على دورة", weight:20,
+    table:[{name:"دورة قصيرة",price:300},{name:"دورة متوسطة",price:500},{name:"دورة متقدمة",price:900}]},
+  {lbl:["محاولة","تانية"],        bg:"#1a4a9e", rim:"#3a7ae8", txt:"#ffffff", type:"retry", weight:15},
+  {lbl:["خصم 20%","على الباقات"],bg:"#0a4a9e", rim:"#1a70ee", txt:"#ffffff", type:"win", disc:20, discLabel:"خصم 20% على الباقات", weight:15,
+    table:[{name:"باقة المالي",price:1500},{name:"باقة الإداري",price:1800},{name:"باقة التميز",price:2200},{name:"باقة الأعمال",price:2500}]},
+  {lbl:["جلسة","استشارية"],      bg:"#203858", rim:"#3a6090", txt:"#ffffff", type:"win", discLabel:"جلسة استشارية مجانية", free:true, weight:10},
+  {lbl:["خصم 15%","على دبلوم"],  bg:"#083060", rim:"#1460b0", txt:"#ffffff", type:"win", disc:15, discLabel:"خصم 15% على دبلوم", weight:10,
+    table:[{name:"دبلوم مالي",price:7000},{name:"دبلوم إداري",price:8000},{name:"دبلوم الأعمال",price:9000}]},
+  {lbl:["Game","Over"],           bg:"#1a0a3a", rim:"#5a2aaa", txt:"#e8d0ff", type:"lose", weight:15},
+  {lbl:["حقيبة","تدريبية"],      bg:"#0d3575", rim:"#1a5ab8", txt:"#ffffff", type:"win", discLabel:"حقيبة تدريبية مجانية", free:true, weight:10},
+  {lbl:["دورة","مجانية"],         bg:"#0760a8", rim:"#1090e0", txt:"#ffffff", type:"win", discLabel:"دورة مسجلة مجانية", free:true, weight:5},
+];
+
+// بناء جدول الاحتمالات المرجحة
+const totalWeight = S.reduce((a,s)=>a+s.weight,0);
+let cumulative = [];
+let acc = 0;
+S.forEach((s,i)=>{ acc+=s.weight; cumulative.push(acc/totalWeight); });
+
+function weightedRandom(){
+  const r = Math.random();
+  for(let i=0;i<cumulative.length;i++) if(r<=cumulative[i]) return i;
+  return S.length-1;
+}
+
+const cv=document.getElementById("wc");
+const cx=cv.getContext("2d");
+const N=S.length, ARC=(2*Math.PI)/N;
+let rot=0, spinning=false, used=0, dead=false, animId=null;
+
+function getSlot(a){
+  const pointer=-Math.PI/2;
+  const n=((pointer-a)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+  return Math.floor(n/ARC)%N;
+}
+
+// حساب الزاوية النهائية لخانة معينة
+function angleForSlot(targetIdx){
+  // مركز الخانة المستهدفة
+  const slotCenter = targetIdx * ARC + ARC/2;
+  // عايزها تكون عند -PI/2 (فوق)
+  const pointer = -Math.PI/2;
+  // الفرق
+  let diff = pointer - slotCenter;
+  // نضيف دورات كاملة
+  diff = diff % (2*Math.PI);
+  if(diff > 0) diff -= 2*Math.PI;
+  return diff;
+}
+
+function drawWheel(r){
+  cx.clearRect(0,0,320,320);
+  const C=160, R=152;
+  for(let i=0;i<N;i++){
+    const a0=r+i*ARC, a1=a0+ARC, s=S[i], mid=a0+ARC/2;
+    cx.beginPath(); cx.moveTo(C,C); cx.arc(C,C,R,a0,a1); cx.closePath();
+    cx.fillStyle=s.bg; cx.fill();
+    cx.beginPath(); cx.moveTo(C,C); cx.arc(C,C,R,a0,a1); cx.closePath();
+    cx.strokeStyle="rgba(255,255,255,0.15)"; cx.lineWidth=1.5; cx.stroke();
+    cx.beginPath(); cx.arc(C,C,R,a0,a1);
+    cx.strokeStyle=s.rim; cx.lineWidth=6; cx.stroke();
+
+    cx.save();
+    cx.translate(C,C);
+    cx.rotate(mid);
+    const lines=s.lbl;
+    const fontSize=15;
+    const lineGap=fontSize+5;
+    const startR=R*0.80;
+    lines.forEach((ln,li)=>{
+      cx.save();
+      const finalR=startR-li*lineGap;
+      cx.translate(finalR,0);
+      cx.rotate(Math.PI/2);
+      cx.font=`bold ${fontSize}px Tajawal,sans-serif`;
+      cx.fillStyle=s.txt;
+      cx.textAlign="center";
+      cx.textBaseline="middle";
+      cx.fillText(ln,0,0);
+      cx.restore();
+    });
+    cx.restore();
+  }
+
+  cx.beginPath(); cx.arc(C,C,40,0,2*Math.PI);
+  cx.fillStyle="#061830"; cx.fill();
+  cx.strokeStyle="rgba(255,255,255,0.3)"; cx.lineWidth=3; cx.stroke();
+  cx.beginPath(); cx.arc(C,C,R+4,0,2*Math.PI);
+  cx.strokeStyle="rgba(255,255,255,0.1)"; cx.lineWidth=8; cx.stroke();
+  for(let i=0;i<N*4;i++){
+    const a=i*(2*Math.PI/(N*4));
+    cx.beginPath(); cx.arc(C+Math.cos(a)*(R+3),C+Math.sin(a)*(R+3),2.5,0,2*Math.PI);
+    cx.fillStyle=i%4===0?"#FFD700":"rgba(255,255,255,0.25)"; cx.fill();
+  }
+}
+
+function genCode(){return"WSM-"+Math.random().toString(36).substr(2,6).toUpperCase()}
+
+function buildWaMsg(s,code){
+  let msg=`🎡 *نتيجة عجلة الحظ - وسم المعرفة*\n\n`;
+  msg+=`🏆 الجائزة: ${s.discLabel}\n`;
+  if(code) msg+=`🔑 كود الفوز: ${code}\n`;
+  if(s.disc&&s.table){
+    msg+=`\n📌 *جدول التحويل (${s.disc}%):*\n`;
+    s.table.forEach(r=>{
+      const val=Math.round(r.price*s.disc/100);
+      msg+=`• ${r.name} (${r.price.toLocaleString()} ر) ← خصم ${val.toLocaleString()} ر\n`;
+    });
+  }
+  msg+=`\nأرجو تطبيق الخصم، شكراً! 🙏`;
+  return encodeURIComponent(msg);
+}
+
+function buildConvTable(s){
+  if(!s.disc||!s.table) return "";
+  let html=`<table class="conv-table"><thead><tr><th>المنتج</th><th>السعر</th><th class="val">الخصم</th></tr></thead><tbody>`;
+  s.table.forEach(r=>{
+    const val=Math.round(r.price*s.disc/100);
+    html+=`<tr><td>${r.name}</td><td>${r.price.toLocaleString()} ر</td><td class="val">${val.toLocaleString()} ر</td></tr>`;
+  });
+  return html+`</tbody></table>`;
+}
+
+function showResult(idx){
+  const s=S[idx];
+  const btn=document.getElementById("spinBtn");
+  document.getElementById("rIcon").textContent=s.type==="retry"?"🔄":s.type==="lose"?"💀":"🎉";
+  document.getElementById("rBtns").innerHTML="";
+  document.getElementById("rCodeBox").style.display="none";
+  document.getElementById("rTable").innerHTML="";
+
+  if(s.type==="retry"){
+    if(used>=3){
+      document.getElementById("rTitle").textContent="انتهت المحاولات!";
+      document.getElementById("rSub").textContent="استخدمت كل محاولاتك. زور موقعنا لاستكشاف الدورات.";
+      dead=true; btn.disabled=true;
+    } else {
+      document.getElementById("rTitle").textContent="محاولة تانية!";
+      document.getElementById("rSub").textContent="لك محاولة إضافية — دوّر مرة ثانية!";
+      dead=false;
+      document.getElementById("rBtns").innerHTML=`<button class="btn-spin-again" onclick="hideRes()">دوّر تاني!</button>`;
+    }
+  } else if(s.type==="lose"){
+    document.getElementById("rTitle").textContent="Game Over!";
+    document.getElementById("rSub").textContent="الحظ مش معاك المرة دي! الدورات دايماً في انتظارك.";
+    dead=true; btn.disabled=true;
+  } else {
+    document.getElementById("rTitle").textContent="مبروك!";
+    let sub=`فزت بـ ${s.discLabel}`;
+    if(s.disc) sub+=`\nشوف جدول الخصم وتواصل معنا عبر واتساب`;
+    else sub+=`\nتواصل معنا عبر واتساب لاستلام جائزتك`;
+    document.getElementById("rSub").textContent=sub;
+    let code=null;
+    if(s.disc){
+      code=genCode();
+      document.getElementById("rCode").textContent=code;
+      document.getElementById("rCodeBox").style.display="block";
+      document.getElementById("rTable").innerHTML=buildConvTable(s);
+    }
+    const waUrl=`https://wa.me/${WA_NUMBER}?text=${buildWaMsg(s,code)}`;
+    dead=true; btn.disabled=true;
+    document.getElementById("rBtns").innerHTML=`
+      <a class="btn-wa-res" href="${waUrl}" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.126 1.524 5.864L.057 23.882l6.197-1.625A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.371l-.36-.213-3.68.965.98-3.585-.233-.369A9.79 9.79 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        احصل على جائزتك عبر واتساب
+      </a>`;
+  }
+
+  const card=document.getElementById("resCard");
+  card.className="res-card show "+s.type;
+  card.style.display="none"; void card.offsetWidth; card.style.display="block";
+}
+
+function hideRes(){
+  document.getElementById("resCard").className="res-card";
+  document.getElementById("resCard").style.display="none";
+  if(!dead){
+    const btn=document.getElementById("spinBtn");
+    btn.disabled=false; btn.textContent="دوّر!"; btn.onclick=doSpin;
+  }
+}
+
+function doSpin(){
+  if(spinning||dead) return;
+  const btn=document.getElementById("spinBtn");
+  spinning=true; btn.textContent="قف!"; btn.onclick=doStop;
+  used++;
+  const spd=0.20+Math.random()*0.08;
+  function freeLoop(){rot+=spd; drawWheel(rot); animId=requestAnimationFrame(freeLoop);}
+  animId=requestAnimationFrame(freeLoop);
+}
+
+function doStop(){
+  if(!spinning) return;
+  const btn=document.getElementById("spinBtn");
+  btn.disabled=true; btn.textContent="...";
+  cancelAnimationFrame(animId);
+
+  // اختار الخانة بالاحتمالات المرجحة
+  const targetIdx = weightedRandom();
+  // احسب كام دورة إضافية + الزاوية الصح
+  const extraSpins = (4 + Math.floor(Math.random()*3)) * 2 * Math.PI;
+  const targetAngle = angleForSlot(targetIdx);
+  // نطبّع الزاوية الحالية
+  const curNorm = rot % (2*Math.PI);
+  // الزاوية النهائية
+  const finalRot = rot - curNorm + (2*Math.PI) + extraSpins + targetAngle + (2*Math.PI);
+
+  const dur=2800, t0=performance.now();
+  function decel(now){
+    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,4);
+    rot=rot+(finalRot-rot)*e;
+    // نعمل interpolation مباشر
+    const cur2=rot+(finalRot-rot)*Math.min((now-t0)/dur,1);
+    drawWheel(finalRot*e + rot*(1-e));
+
+    if(p<1){requestAnimationFrame(decel);}
+    else{
+      rot=finalRot;
+      drawWheel(rot);
+      spinning=false;
+      const sl=S[targetIdx];
+      if(sl.type==="retry"&&used<3){
+        dead=false; setTimeout(()=>showResult(targetIdx),300);
+      } else {
+        setTimeout(()=>showResult(targetIdx),300);
+      }
+    }
+  }
+
+  // نعمل animation بسيط من rot الحالي لـ finalRot
+  const startRot=rot;
+  function decel2(now){
+    const p=Math.min((now-t0)/dur,1);
+    const e=1-Math.pow(1-p,3);
+    rot=startRot+(finalRot-startRot)*e;
+    drawWheel(rot);
+    if(p<1){requestAnimationFrame(decel2);}
+    else{
+      rot=finalRot;
+      drawWheel(rot);
+      spinning=false;
+      const sl=S[targetIdx];
+      if(sl.type==="retry"&&used<3){
+        dead=false; setTimeout(()=>showResult(targetIdx),400);
+      } else {
+        setTimeout(()=>showResult(targetIdx),400);
+      }
+    }
+  }
+  requestAnimationFrame(decel2);
+
+  // تحديث رابط واتساب الفوتر
+  document.getElementById("footerWa").href=`https://wa.me/${WA_NUMBER}`;
+}
+
+drawWheel(0);
+document.getElementById("spinBtn").onclick=doSpin;
+</script>
